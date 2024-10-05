@@ -10,11 +10,12 @@ class DownloadHelper(QThread):
     progressChanged = pyqtSignal(int)
     messageChanged = pyqtSignal(str)
 
-    def __init__(self, source, directory, hd):
+    def __init__(self, source, directory, hd, urlIndex):
         super().__init__()
         self.source = source
         self.directory = directory
         self.hd = hd
+        self.host = "https://" + ("ladist1" if urlIndex == 0 else "nl" if urlIndex == 1 else "vhdist1") + ".catbox.video/"
 
     def run(self):
         if self.hd is None:
@@ -62,7 +63,7 @@ class DownloadHelper(QThread):
                 url = L['HQ']
                 mp3 = False
             if url:
-                url = "https://nl.catbox.video/" + url
+                url = self.host + url
                 if ann != str(L['annId']):
                     print("Fetching next ANN entry")
                     self.messageChanged.emit("Fetching next ANN entry")
@@ -118,7 +119,7 @@ class DownloadHelper(QThread):
         total = len(source)
     
         for L in source:
-            url = "https://nl.catbox.video/"
+            url = self.host
             if hd:
                 if L['HQ']:
                     url += L['HQ']

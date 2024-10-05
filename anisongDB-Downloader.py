@@ -8,6 +8,7 @@
 import http.client
 import json
 import logging
+import math
 
 import requests
 from PyQt6 import QtCore, QtWidgets
@@ -45,10 +46,10 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__()
 
         self.setWindowTitle("AnisongDB Downloader")
-        self.setFixedSize(792, 592)
+        self.setFixedSize(1166, 806)
 
         self.tableWidget = QtWidgets.QTableWidget(parent=self)
-        self.tableWidget.setGeometry(QtCore.QRect(10, 130, 771, 441))
+        self.tableWidget.setGeometry(QtCore.QRect(10, 130, 1146, 664))
         self.tableWidget.setVerticalHeaderLabels([])
         self.tableWidget.verticalHeader().setVisible(False)
         self.tableWidget.setColumnCount(7)
@@ -58,120 +59,128 @@ class MainWindow(QMainWindow):
         self.tableWidget.setObjectName("tableWidget")
 
         self.lineEdit = QtWidgets.QLineEdit(parent=self)
-        self.lineEdit.setGeometry(QtCore.QRect(10, 10, 411, 21))
+        self.lineEdit.setGeometry(QtCore.QRect(10, 10, 785, 21))
         self.lineEdit.setPlaceholderText("Search by anime...")
         self.lineEdit.returnPressed.connect(self.searchButton)
         self.lineEdit.setObjectName("lineEdit")
 
         self.lineEdit_2 = QtWidgets.QLineEdit(parent=self)
-        self.lineEdit_2.setGeometry(QtCore.QRect(10, 40, 411, 21))
+        self.lineEdit_2.setGeometry(QtCore.QRect(10, 40, 785, 21))
         self.lineEdit_2.setPlaceholderText("Search by song name...")
         self.lineEdit_2.returnPressed.connect(self.searchButton)
         self.lineEdit_2.setObjectName("lineEdit_2")
 
         self.lineEdit_3 = QtWidgets.QLineEdit(parent=self)
-        self.lineEdit_3.setGeometry(QtCore.QRect(10, 70, 411, 21))
+        self.lineEdit_3.setGeometry(QtCore.QRect(10, 70, 785, 21))
         self.lineEdit_3.setPlaceholderText("Search by artist...")
         self.lineEdit_3.returnPressed.connect(self.searchButton)
         self.lineEdit_3.setObjectName("lineEdit_3")
 
         self.lineEdit_4 = QtWidgets.QLineEdit(parent=self)
-        self.lineEdit_4.setGeometry(QtCore.QRect(10, 100, 331, 21))
+        self.lineEdit_4.setGeometry(QtCore.QRect(10, 100, 661, 21))
         self.lineEdit_4.setPlaceholderText("Search by composer...")
         self.lineEdit_4.returnPressed.connect(self.searchButton)
         self.lineEdit_4.setObjectName("lineEdit_4")
 
         self.checkBox = QtWidgets.QCheckBox(parent=self)
-        self.checkBox.setGeometry(QtCore.QRect(430, 10, 101, 21))
+        self.checkBox.setGeometry(QtCore.QRect(804, 10, 101, 21))
         self.checkBox.setText("Partial Match")
         self.checkBox.setChecked(True)
         self.checkBox.setObjectName("checkBox")
 
         self.checkBox_2 = QtWidgets.QCheckBox(parent=self)
-        self.checkBox_2.setGeometry(QtCore.QRect(430, 40, 101, 21))
+        self.checkBox_2.setGeometry(QtCore.QRect(804, 40, 101, 21))
         self.checkBox_2.setText("Partial Match")
         self.checkBox_2.setChecked(True)
         self.checkBox_2.setObjectName("checkBox_2")
 
         self.checkBox_3 = QtWidgets.QCheckBox(parent=self)
-        self.checkBox_3.setGeometry(QtCore.QRect(430, 70, 101, 21))
+        self.checkBox_3.setGeometry(QtCore.QRect(804, 70, 101, 21))
         self.checkBox_3.setText("Partial Match")
         self.checkBox_3.setChecked(True)
         self.checkBox_3.setObjectName("checkBox_3")
 
         self.checkBox_4 = QtWidgets.QCheckBox(parent=self)
-        self.checkBox_4.setGeometry(QtCore.QRect(350, 100, 101, 21))
+        self.checkBox_4.setGeometry(QtCore.QRect(680, 100, 101, 21))
         self.checkBox_4.setText("Partial Match")
         self.checkBox_4.setChecked(True)
         self.checkBox_4.setObjectName("checkBox_4")
 
         self.checkBox_5 = QtWidgets.QCheckBox(parent=self)
-        self.checkBox_5.setGeometry(QtCore.QRect(530, 10, 41, 21))
+        self.checkBox_5.setGeometry(QtCore.QRect(904, 10, 41, 21))
         self.checkBox_5.setText("OP")
         self.checkBox_5.setChecked(True)
         self.checkBox_5.setObjectName("checkBox_5")
 
         self.checkBox_6 = QtWidgets.QCheckBox(parent=self)
-        self.checkBox_6.setGeometry(QtCore.QRect(530, 40, 40, 21))
+        self.checkBox_6.setGeometry(QtCore.QRect(904, 40, 40, 21))
         self.checkBox_6.setText("ED")
         self.checkBox_6.setChecked(True)
         self.checkBox_6.setObjectName("checkBox_6")
 
         self.checkBox_7 = QtWidgets.QCheckBox(parent=self)
-        self.checkBox_7.setGeometry(QtCore.QRect(530, 70, 50, 21))
+        self.checkBox_7.setGeometry(QtCore.QRect(904, 70, 50, 21))
         self.checkBox_7.setText("INS")
         self.checkBox_7.setChecked(True)
         self.checkBox_7.setObjectName("checkBox_7")
 
         self.checkBox_8 = QtWidgets.QCheckBox(parent=self)
-        self.checkBox_8.setGeometry(QtCore.QRect(450, 100, 121, 21))
+        self.checkBox_8.setGeometry(QtCore.QRect(780, 100, 121, 21))
         self.checkBox_8.setText("Ignore duplicates")
         self.checkBox_8.setChecked(True)
         self.checkBox_8.setObjectName("checkBox_8")
 
         self.pushButton = QtWidgets.QPushButton(parent=self)
-        self.pushButton.setGeometry(QtCore.QRect(700, 10, 81, 25))
+        self.pushButton.setGeometry(QtCore.QRect(1074, 10, 81, 25))
         self.pushButton.setText("Search")
         self.pushButton.clicked.connect(self.searchButton)
         self.pushButton.setObjectName("pushButton")
 
         self.pushButton_2 = QtWidgets.QPushButton(parent=self)
-        self.pushButton_2.setGeometry(QtCore.QRect(590, 40, 191, 25))
+        self.pushButton_2.setGeometry(QtCore.QRect(964, 40, 191, 25))
         self.pushButton_2.setText("Download (MP3)")
         self.pushButton_2.clicked.connect(self.downloadMP3)
         self.pushButton_2.setObjectName("pushButton_2")
 
         self.pushButton_3 = QtWidgets.QPushButton(parent=self)
-        self.pushButton_3.setGeometry(QtCore.QRect(687, 70, 94, 25))
+        self.pushButton_3.setGeometry(QtCore.QRect(1061, 70, 94, 25))
         self.pushButton_3.setText("Download (SD)")
         self.pushButton_3.clicked.connect(self.downloadSD)
         self.pushButton_3.setObjectName("pushButton_3")
 
         self.pushButton_4 = QtWidgets.QPushButton(parent=self)
-        self.pushButton_4.setGeometry(QtCore.QRect(590, 70, 94, 25))
+        self.pushButton_4.setGeometry(QtCore.QRect(964, 70, 94, 25))
         self.pushButton_4.setText("Download (HD)")
         self.pushButton_4.clicked.connect(self.downloadHD)
         self.pushButton_4.setObjectName("pushButton_4")
 
         self.pushButton_5 = QtWidgets.QPushButton(parent=self)
-        self.pushButton_5.setGeometry(QtCore.QRect(590, 100, 94, 25))
+        self.pushButton_5.setGeometry(QtCore.QRect(964, 100, 94, 25))
         self.pushButton_5.setText("Show selection")
         self.pushButton_5.clicked.connect(self.showSelection)
         self.pushButton_5.setObjectName("pushButton_5")
 
         self.pushButton_6 = QtWidgets.QPushButton(parent=self)
-        self.pushButton_6.setGeometry(QtCore.QRect(687, 100, 94, 25))
+        self.pushButton_6.setGeometry(QtCore.QRect(1061, 100, 94, 25))
         self.pushButton_6.setText("Reinitialize")
         self.pushButton_6.clicked.connect(self.reinitializeTable)
         self.pushButton_6.setObjectName("pushButton_6")
 
         self.comboBox = QtWidgets.QComboBox(parent=self)
-        self.comboBox.setGeometry(QtCore.QRect(590, 10, 101, 25))
+        self.comboBox.setGeometry(QtCore.QRect(964, 10, 101, 25))
         self.comboBox.setEditable(False)
         self.comboBox.setCurrentText("")
         self.comboBox.setPlaceholderText("")
         self.comboBox.addItems(["Intersection", "Union"])
         self.comboBox.setObjectName("comboBox")
+
+        self.comboBox_2 = QtWidgets.QComboBox(parent=self)
+        self.comboBox_2.setGeometry(QtCore.QRect(901, 100, 57, 25))
+        self.comboBox_2.setEditable(False)
+        self.comboBox_2.setCurrentText("")
+        self.comboBox_2.setPlaceholderText("")
+        self.comboBox_2.addItems(["ladist", "nl", "vhdist"])
+        self.comboBox_2.setObjectName("comboBox_2")
 
         self.lw = LoadWindow()
 
@@ -180,7 +189,7 @@ class MainWindow(QMainWindow):
     def reinitializeTable(self):
         if self.lw.downloading:
             return
-        
+
         self.clearTable()
         self.resizeTable()
         self.entryDict = {}
@@ -188,7 +197,7 @@ class MainWindow(QMainWindow):
     def downloadHD(self):
         directory = str(QFileDialog.getExistingDirectory(self, "Select download directory"))
         if directory != "":
-            dh = DownloadHelper(list(self.entryDict.values()), directory, True)
+            dh = DownloadHelper(list(self.entryDict.values()), directory, True, self.comboBox_2.currentIndex())
             self.lw.setDownloadHelper(dh)
             self.lw.show()
             self.lw.downloading = True
@@ -197,7 +206,7 @@ class MainWindow(QMainWindow):
     def downloadSD(self):
         directory = str(QFileDialog.getExistingDirectory(self, "Select download directory"))
         if directory != "":
-            dh = DownloadHelper(list(self.entryDict.values()), directory, False)
+            dh = DownloadHelper(list(self.entryDict.values()), directory, False, self.comboBox_2.currentIndex())
             self.lw.setDownloadHelper(dh)
             self.lw.show()
             self.lw.downloading = True
@@ -206,7 +215,7 @@ class MainWindow(QMainWindow):
     def downloadMP3(self):
         directory = str(QFileDialog.getExistingDirectory(self, "Select download directory"))
         if directory != "":
-            dh = DownloadHelper(list(self.entryDict.values()), directory, None)
+            dh = DownloadHelper(list(self.entryDict.values()), directory, None, self.comboBox_2.currentIndex())
             self.lw.setDownloadHelper(dh)
             self.lw.show()
             self.lw.downloading = True
@@ -231,13 +240,13 @@ class MainWindow(QMainWindow):
 
     def resizeTable(self):
         self.tableWidget.resizeColumnsToContents()
-        tableWidth = self.tableWidget.width()
+        tableWidth = self.tableWidget.width() - (22 if self.tableWidget.rowCount() > 21 else 0)
         columnsWidth = 0
         for i in range(self.tableWidget.columnCount()):
             columnsWidth += self.tableWidget.horizontalHeader().sectionSize(i)
         scale = tableWidth / columnsWidth
         for i in range(self.tableWidget.columnCount()):
-            self.tableWidget.setColumnWidth(i, int(self.tableWidget.horizontalHeader().sectionSize(i) * scale))
+            self.tableWidget.setColumnWidth(i, math.floor(self.tableWidget.horizontalHeader().sectionSize(i) * scale))
 
     def clearTable(self):
         while self.tableWidget.rowCount() > 0:
