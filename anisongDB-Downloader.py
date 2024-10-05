@@ -9,6 +9,7 @@ import http.client
 import json
 import logging
 import math
+from typing import List
 
 import requests
 from PyQt6 import QtCore, QtWidgets
@@ -77,7 +78,7 @@ class MainWindow(QMainWindow):
         self.lineEdit_3.setObjectName("lineEdit_3")
 
         self.lineEdit_4 = QtWidgets.QLineEdit(parent=self)
-        self.lineEdit_4.setGeometry(QtCore.QRect(10, 100, 661, 21))
+        self.lineEdit_4.setGeometry(QtCore.QRect(10, 100, 571, 21))
         self.lineEdit_4.setPlaceholderText("Search by composer...")
         self.lineEdit_4.returnPressed.connect(self.searchButton)
         self.lineEdit_4.setObjectName("lineEdit_4")
@@ -86,85 +87,106 @@ class MainWindow(QMainWindow):
         self.checkBox.setGeometry(QtCore.QRect(804, 10, 101, 21))
         self.checkBox.setText("Partial Match")
         self.checkBox.setChecked(True)
+        self.checkBox.setToolTip("If activated, results only have to contain the filter and not match it exactly")
         self.checkBox.setObjectName("checkBox")
 
         self.checkBox_2 = QtWidgets.QCheckBox(parent=self)
         self.checkBox_2.setGeometry(QtCore.QRect(804, 40, 101, 21))
         self.checkBox_2.setText("Partial Match")
         self.checkBox_2.setChecked(True)
+        self.checkBox_2.setToolTip("If activated, results only have to contain the filter and not match it exactly")
         self.checkBox_2.setObjectName("checkBox_2")
 
         self.checkBox_3 = QtWidgets.QCheckBox(parent=self)
         self.checkBox_3.setGeometry(QtCore.QRect(804, 70, 101, 21))
         self.checkBox_3.setText("Partial Match")
         self.checkBox_3.setChecked(True)
+        self.checkBox_3.setToolTip("If activated, results only have to contain the filter and not match it exactly")
         self.checkBox_3.setObjectName("checkBox_3")
 
         self.checkBox_4 = QtWidgets.QCheckBox(parent=self)
-        self.checkBox_4.setGeometry(QtCore.QRect(680, 100, 101, 21))
+        self.checkBox_4.setGeometry(QtCore.QRect(590, 100, 101, 21))
         self.checkBox_4.setText("Partial Match")
         self.checkBox_4.setChecked(True)
+        self.checkBox_4.setToolTip("If activated, results only have to contain the filter and not match it exactly")
         self.checkBox_4.setObjectName("checkBox_4")
 
         self.checkBox_5 = QtWidgets.QCheckBox(parent=self)
         self.checkBox_5.setGeometry(QtCore.QRect(904, 10, 41, 21))
         self.checkBox_5.setText("OP")
         self.checkBox_5.setChecked(True)
+        self.checkBox_5.setToolTip("Whether to search for opening songs")
         self.checkBox_5.setObjectName("checkBox_5")
 
         self.checkBox_6 = QtWidgets.QCheckBox(parent=self)
         self.checkBox_6.setGeometry(QtCore.QRect(904, 40, 40, 21))
         self.checkBox_6.setText("ED")
         self.checkBox_6.setChecked(True)
+        self.checkBox_6.setToolTip("Whether to search for ending songs")
         self.checkBox_6.setObjectName("checkBox_6")
 
         self.checkBox_7 = QtWidgets.QCheckBox(parent=self)
         self.checkBox_7.setGeometry(QtCore.QRect(904, 70, 50, 21))
         self.checkBox_7.setText("INS")
         self.checkBox_7.setChecked(True)
+        self.checkBox_7.setToolTip("Whether to search for insert songs")
         self.checkBox_7.setObjectName("checkBox_7")
 
         self.checkBox_8 = QtWidgets.QCheckBox(parent=self)
-        self.checkBox_8.setGeometry(QtCore.QRect(780, 100, 121, 21))
+        self.checkBox_8.setGeometry(QtCore.QRect(688, 100, 121, 21))
         self.checkBox_8.setText("Ignore duplicates")
         self.checkBox_8.setChecked(True)
+        self.checkBox_8.setToolTip("This will ignore duplicates and only take into account the first instance of [Song Name by Artist] that it has encountered. (Different sets of artists are not considered duplicates)")
         self.checkBox_8.setObjectName("checkBox_8")
 
         self.pushButton = QtWidgets.QPushButton(parent=self)
         self.pushButton.setGeometry(QtCore.QRect(1074, 10, 81, 25))
         self.pushButton.setText("Search")
         self.pushButton.clicked.connect(self.searchButton)
+        self.pushButton.setToolTip("")
         self.pushButton.setObjectName("pushButton")
 
         self.pushButton_2 = QtWidgets.QPushButton(parent=self)
         self.pushButton_2.setGeometry(QtCore.QRect(964, 40, 191, 25))
         self.pushButton_2.setText("Download (MP3)")
         self.pushButton_2.clicked.connect(self.downloadMP3)
+        self.pushButton_2.setToolTip("Download the selected songs as MP3 files")
         self.pushButton_2.setObjectName("pushButton_2")
 
         self.pushButton_3 = QtWidgets.QPushButton(parent=self)
         self.pushButton_3.setGeometry(QtCore.QRect(1061, 70, 94, 25))
         self.pushButton_3.setText("Download (SD)")
         self.pushButton_3.clicked.connect(self.downloadSD)
+        self.pushButton_3.setToolTip("Download the selected songs as videos of the lowest quality available")
         self.pushButton_3.setObjectName("pushButton_3")
 
         self.pushButton_4 = QtWidgets.QPushButton(parent=self)
         self.pushButton_4.setGeometry(QtCore.QRect(964, 70, 94, 25))
         self.pushButton_4.setText("Download (HD)")
         self.pushButton_4.clicked.connect(self.downloadHD)
+        self.pushButton_4.setToolTip("Download the selected songs as videos of the highest quality available")
         self.pushButton_4.setObjectName("pushButton_4")
 
         self.pushButton_5 = QtWidgets.QPushButton(parent=self)
         self.pushButton_5.setGeometry(QtCore.QRect(964, 100, 94, 25))
         self.pushButton_5.setText("Show selection")
         self.pushButton_5.clicked.connect(self.showSelection)
+        self.pushButton_5.setToolTip("Show all selected songs in the table")
         self.pushButton_5.setObjectName("pushButton_5")
 
         self.pushButton_6 = QtWidgets.QPushButton(parent=self)
         self.pushButton_6.setGeometry(QtCore.QRect(1061, 100, 94, 25))
         self.pushButton_6.setText("Reinitialize")
         self.pushButton_6.clicked.connect(self.reinitializeTable)
+        self.pushButton_6.setToolTip("Empty the table and deselect all previously selected songs")
         self.pushButton_6.setObjectName("pushButton_6")
+
+        self.pushButton_7 = QtWidgets.QPushButton(parent=self)
+        self.pushButton_7.setGeometry(QtCore.QRect(867, 100, 94, 25))
+        self.pushButton_7.setText("(De)select all")
+        self.pushButton_7.clicked.connect(self.toggleSelection)
+        self.pushButton_7.setToolTip("Select/Deselect all songs currently in the table")
+        self.pushButton_7.setObjectName("pushButton_7")
 
         self.comboBox = QtWidgets.QComboBox(parent=self)
         self.comboBox.setGeometry(QtCore.QRect(964, 10, 101, 25))
@@ -172,19 +194,30 @@ class MainWindow(QMainWindow):
         self.comboBox.setCurrentText("")
         self.comboBox.setPlaceholderText("")
         self.comboBox.addItems(["Intersection", "Union"])
+        self.comboBox.setToolTip("Define how the filters will be combined together")
         self.comboBox.setObjectName("comboBox")
 
         self.comboBox_2 = QtWidgets.QComboBox(parent=self)
-        self.comboBox_2.setGeometry(QtCore.QRect(901, 100, 57, 25))
+        self.comboBox_2.setGeometry(QtCore.QRect(805, 100, 57, 25))
         self.comboBox_2.setEditable(False)
         self.comboBox_2.setCurrentText("")
         self.comboBox_2.setPlaceholderText("")
         self.comboBox_2.addItems(["ladist", "nl", "vhdist"])
+        self.comboBox_2.setToolTip("Catbox host to download from")
         self.comboBox_2.setObjectName("comboBox_2")
 
         self.lw = LoadWindow()
 
         self.entryDict = {}
+        self.selectedItemsInTable: dict[int, dict] = {}
+
+    def toggleSelection(self):
+        if len(self.selectedItemsInTable) == self.tableWidget.rowCount():
+            for i in range(self.tableWidget.rowCount()):
+                self.tableWidget.item(i, 0).setCheckState(QtCore.Qt.CheckState.Unchecked)
+        else:
+            for i in range(self.tableWidget.rowCount()):
+                self.tableWidget.item(i, 0).setCheckState(QtCore.Qt.CheckState.Checked)
 
     def reinitializeTable(self):
         if self.lw.downloading:
@@ -195,6 +228,8 @@ class MainWindow(QMainWindow):
         self.entryDict = {}
 
     def downloadHD(self):
+        if self.entryDict == {}:
+            return
         directory = str(QFileDialog.getExistingDirectory(self, "Select download directory"))
         if directory != "":
             dh = DownloadHelper(list(self.entryDict.values()), directory, True, self.comboBox_2.currentIndex())
@@ -204,6 +239,8 @@ class MainWindow(QMainWindow):
             dh.start()
 
     def downloadSD(self):
+        if self.entryDict == {}:
+            return
         directory = str(QFileDialog.getExistingDirectory(self, "Select download directory"))
         if directory != "":
             dh = DownloadHelper(list(self.entryDict.values()), directory, False, self.comboBox_2.currentIndex())
@@ -213,6 +250,8 @@ class MainWindow(QMainWindow):
             dh.start()
 
     def downloadMP3(self):
+        if self.entryDict == {}:
+            return
         directory = str(QFileDialog.getExistingDirectory(self, "Select download directory"))
         if directory != "":
             dh = DownloadHelper(list(self.entryDict.values()), directory, None, self.comboBox_2.currentIndex())
@@ -235,8 +274,10 @@ class MainWindow(QMainWindow):
             return
         if item.checkState() == QtCore.Qt.CheckState.Checked:
             self.entryDict[item.entry["annSongId"]] = item.entry
+            self.selectedItemsInTable[item.entry["annSongId"]] = item.entry
         else:
             self.entryDict.pop(item.entry["annSongId"], None)
+            self.selectedItemsInTable.pop(item.entry["annSongId"], None)
 
     def resizeTable(self):
         self.tableWidget.resizeColumnsToContents()
@@ -263,17 +304,20 @@ class MainWindow(QMainWindow):
         checkbox.setCheckState(
             QtCore.Qt.CheckState.Unchecked if songId not in self.entryDict else QtCore.Qt.CheckState.Checked)
 
+        fields = ["annId", "animeJPName", "songType", "songName", "songArtist", "songDifficulty"]
+
         self.tableWidget.setItem(row, 0, checkbox)
-        self.tableWidget.setItem(row, 1, QtWidgets.QTableWidgetItem(str(entry["annId"])))
-        self.tableWidget.setItem(row, 2, QtWidgets.QTableWidgetItem(entry["animeJPName"]))
-        self.tableWidget.setItem(row, 3, QtWidgets.QTableWidgetItem(entry["songType"]))
-        self.tableWidget.setItem(row, 4, QtWidgets.QTableWidgetItem(entry["songName"]))
-        self.tableWidget.setItem(row, 5, QtWidgets.QTableWidgetItem(entry["songArtist"]))
-        self.tableWidget.setItem(row, 6, QtWidgets.QTableWidgetItem(str(entry["songDifficulty"])))
+
+        for i in range(1, 7):
+            item = QtWidgets.QTableWidgetItem(str(entry[fields[i - 1]]))
+            item.setFlags(item.flags() ^ QtCore.Qt.ItemFlag.ItemIsEditable)
+            self.tableWidget.setItem(row, i, item)
 
     def searchButton(self):
         if self.lw.downloading:
             return
+
+        self.selectedItemsInTable = {}
 
         reqObj = {
             "and_logic": not self.comboBox.currentIndex(),
