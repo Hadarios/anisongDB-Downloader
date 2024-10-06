@@ -9,6 +9,7 @@ from bs4 import BeautifulSoup
 class DownloadHelper(QThread):
     progressChanged = pyqtSignal(int)
     messageChanged = pyqtSignal(str)
+    doneSignal = pyqtSignal(bool)
 
     def __init__(self, source, directory, hd, urlIndex):
         super().__init__()
@@ -16,13 +17,16 @@ class DownloadHelper(QThread):
         self.directory = directory
         self.hd = hd
         self.host = "https://" + ("ladist1" if urlIndex == 0 else "nl" if urlIndex == 1 else "vhdist1") + ".catbox.video/"
+        self.running = False
 
     def run(self):
+        self.running = True
         if self.hd is None:
             self.downloadMP3(self.source, self.directory)
         else:
             self.downloadVideo(self.source, self.directory, self.hd)
-    
+        self.doneSignal.emit(True)
+
     def fetchSong(self, anime, L, url, directory, ins):
         print("Downloading " + L['songName'] + " from catbox.moe")
         self.messageChanged.emit("Downloading " + L['songName'] + " from catbox.moe")
@@ -51,8 +55,11 @@ class DownloadHelper(QThread):
         total = len(source)
         ann = ""
         anime = ""
-    
-        for L in source:
+
+        i = 0
+        while self.running and i < len(source):
+            L = source[i]
+            i += 1
             mp3 = True
             if L['audio']:
                 url = L['audio']
@@ -117,8 +124,11 @@ class DownloadHelper(QThread):
     def downloadVideo(self, source, directory, hd):
         progress = 0
         total = len(source)
-    
-        for L in source:
+
+        i = 0
+        while self.running and i < len(source):
+            L = source[i]
+            i += 1
             url = self.host
             if hd:
                 if L['HQ']:
@@ -140,3 +150,6 @@ class DownloadHelper(QThread):
             self.messageChanged.emit("Written")
             progress += 1
             self.progressChanged.emit(int(progress / total * 100))
+
+    def stop(self):
+        self.running = False
