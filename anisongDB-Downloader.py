@@ -9,10 +9,10 @@ import http.client
 import json
 import logging
 import math
-from typing import List
-
+import os
+import sys
 import requests
-from PyQt6 import QtCore, QtWidgets
+from PyQt6 import QtCore, QtWidgets, QtGui
 from PyQt6.QtWidgets import QApplication, QMainWindow, QFileDialog
 
 from LoadWindow import LoadWindow
@@ -370,6 +370,13 @@ class MainWindow(QMainWindow):
         self.resizeTable()
 
 app = QApplication([])
+
+# if condition used to differentiate .exe use and python script use
+if getattr(sys, 'frozen', False):
+    # sys._MEIPASS is an env variable defined by pyinstaller
+    app.setWindowIcon(QtGui.QIcon(os.path.join(sys._MEIPASS, "files/logo.png")))
+else:
+    app.setWindowIcon(QtGui.QIcon('files/logo.png'))
 
 window = MainWindow()
 window.show()
