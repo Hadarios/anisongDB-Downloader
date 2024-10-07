@@ -12,8 +12,10 @@ import math
 import os
 import sys
 import requests
+import tempfile
 from PyQt6 import QtCore, QtWidgets, QtGui
 from PyQt6.QtWidgets import QApplication, QMainWindow, QFileDialog
+from win32ctypes.pywin32.pywintypes import datetime
 
 from LoadWindow import LoadWindow
 from downloadHelper import DownloadHelper
@@ -29,8 +31,11 @@ headers = {
     "Content-Type": "application/json",
 }
 
-# You must initialize logging, otherwise you'll not see debug output.
-logging.basicConfig()
+logging.basicConfig(filename=tempfile.gettempdir() + "/anisongDB-Downloader" + str(datetime.now().timestamp()) + ".log",
+                    filemode='a',
+                    format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
+                    datefmt='%H:%M:%S',
+                    level=logging.DEBUG)
 logging.getLogger().setLevel(logging.DEBUG)
 requests_log = logging.getLogger("requests.packages.urllib3")
 requests_log.setLevel(logging.DEBUG)
