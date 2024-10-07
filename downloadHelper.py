@@ -1,5 +1,6 @@
 import os
 import subprocess
+import sys
 
 import eyed3
 import requests
@@ -90,7 +91,10 @@ class DownloadHelper(QThread):
     
                 if not mp3:
                     open("temp.webm", "wb").write(response.content)
-                    subprocess.run('ffmpeg -i temp.webm "{0}"'.format(namefile), shell=True)
+                    if sys.platform == 'win32':
+                        subprocess.run('files/ffmpeg -i temp.webm "{0}"'.format(namefile), shell=True)
+                    else:
+                        subprocess.run('ffmpeg -i temp.webm "{0}"'.format(namefile), shell=True)
                     os.remove("temp.webm")
                     print("Complete")
                     self.messageChanged.emit("Complete")
