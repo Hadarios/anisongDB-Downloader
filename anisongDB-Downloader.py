@@ -203,11 +203,11 @@ class MainWindow(QMainWindow):
         self.comboBox.setObjectName("comboBox")
 
         self.comboBox_2 = QtWidgets.QComboBox(parent=self)
-        self.comboBox_2.setGeometry(QtCore.QRect(805, 100, 57, 25))
+        self.comboBox_2.setGeometry(QtCore.QRect(809, 100, 50, 25))
         self.comboBox_2.setEditable(False)
         self.comboBox_2.setCurrentText("")
         self.comboBox_2.setPlaceholderText("")
-        self.comboBox_2.addItems(["ladist", "nl", "vhdist"])
+        self.comboBox_2.addItems(["eu", "naw", "nae"])
         self.comboBox_2.setToolTip("Catbox host to download from")
         self.comboBox_2.setObjectName("comboBox_2")
 
@@ -237,7 +237,7 @@ class MainWindow(QMainWindow):
             return
         directory = str(QFileDialog.getExistingDirectory(self, "Select download directory"))
         if directory != "":
-            dh = DownloadHelper(list(self.entryDict.values()), directory, True, self.comboBox_2.currentIndex())
+            dh = DownloadHelper(list(self.entryDict.values()), directory, True, self.comboBox_2.currentText())
             self.lw.setDownloadHelper(dh)
             self.lw.show()
             self.lw.downloading = True
@@ -248,7 +248,7 @@ class MainWindow(QMainWindow):
             return
         directory = str(QFileDialog.getExistingDirectory(self, "Select download directory"))
         if directory != "":
-            dh = DownloadHelper(list(self.entryDict.values()), directory, False, self.comboBox_2.currentIndex())
+            dh = DownloadHelper(list(self.entryDict.values()), directory, False, self.comboBox_2.currentText())
             self.lw.setDownloadHelper(dh)
             self.lw.show()
             self.lw.downloading = True
@@ -259,7 +259,7 @@ class MainWindow(QMainWindow):
             return
         directory = str(QFileDialog.getExistingDirectory(self, "Select download directory"))
         if directory != "":
-            dh = DownloadHelper(list(self.entryDict.values()), directory, None, self.comboBox_2.currentIndex())
+            dh = DownloadHelper(list(self.entryDict.values()), directory, None, self.comboBox_2.currentText())
             self.lw.setDownloadHelper(dh)
             self.lw.show()
             self.lw.downloading = True

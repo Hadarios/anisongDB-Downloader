@@ -12,12 +12,12 @@ class DownloadHelper(QThread):
     messageChanged = pyqtSignal(str)
     doneSignal = pyqtSignal(bool)
 
-    def __init__(self, source, directory, hd, urlIndex):
+    def __init__(self, source, directory, hd, host):
         super().__init__()
         self.source = source
         self.directory = directory
         self.hd = hd
-        self.host = "https://" + ("ladist1" if urlIndex == 0 else "nl" if urlIndex == 1 else "vhdist1") + ".catbox.video/"
+        self.host = "https://" + host + "dist.animemusicquiz.com/"
         self.running = False
 
     def run(self):
