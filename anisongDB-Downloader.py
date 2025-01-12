@@ -230,6 +230,7 @@ class MainWindow(QMainWindow):
                 for i in range(self.tableWidget.rowCount()):
                     self.tableWidget.item(i, 0).setCheckState(QtCore.Qt.CheckState.Checked)
         except:
+            logging.exception("An error has occured while toggling selection.")
             self.showErrorMessage("An error occured while toggling selection.", "toggling")
 
     def reinitializeTable(self):
@@ -241,6 +242,7 @@ class MainWindow(QMainWindow):
             self.resizeTable()
             self.entryDict = {}
         except:
+            logging.exception("An error has occured while reinitializing the table.")
             self.showErrorMessage("An error occured while reinitializing the table.", "reinit")
 
     def startDownload(self, hd):
@@ -273,6 +275,7 @@ class MainWindow(QMainWindow):
                 self.addEntryToTable(self.entryDict[songId])
             self.resizeTable()
         except:
+            logging.exception("An error has occured while showing the selection.")
             self.showErrorMessage("An error occured while showing the selection.", "selection")
 
     def entryClicked(self, item):
@@ -374,6 +377,7 @@ class MainWindow(QMainWindow):
 
             self.resizeTable()
         except:
+            logging.exception("An error has occured while searching.")
             self.showErrorMessage("An error occured while searching.", "searching")
 
 
