@@ -31,7 +31,7 @@ pip install -r requirements.txt
 ## Build an EXE file
 You can build an EXE file yourself by running the following command:
 ```Bash
-pyinstaller anisongDB-Downloader.py
+pyinstaller anisongDB-Downloader.spec
 ```
 You can install pyinstaller through pip:
 ```Bash
