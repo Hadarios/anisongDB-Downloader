@@ -30,17 +30,18 @@ headers = {
     "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:130.0) Gecko/20100101 Firefox/130.0",
     "Content-Type": "application/json",
 }
-
-logging.basicConfig(filename=tempfile.gettempdir() + "/anisongDB-Downloader" + str(datetime.now().timestamp()) + ".log",
+logFile = os.path.join(tempfile.gettempdir(), "anisongDB-Downloader" + str(datetime.now().timestamp()) + ".log")
+logging.basicConfig(
                     filemode='a',
                     format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
                     datefmt='%H:%M:%S',
-                    level=logging.DEBUG)
-logging.getLogger().setLevel(logging.DEBUG)
-requests_log = logging.getLogger("requests.packages.urllib3")
-requests_log.setLevel(logging.DEBUG)
-requests_log.propagate = True
+                    level=logging.DEBUG,
+                    filename=logFile
+)
 
+requests_log = logging.getLogger("requests.packages.urllib3")
+requests_log.setLevel(logging.INFO)
+requests_log.propagate = True
 
 class QEntryItem(QtWidgets.QTableWidgetItem):
     def __init__(self, entry, *__args):
@@ -211,68 +212,68 @@ class MainWindow(QMainWindow):
         self.comboBox_2.setToolTip("Catbox host to download from")
         self.comboBox_2.setObjectName("comboBox_2")
 
-        self.lw = LoadWindow()
+        self.lw = LoadWindow(self)
+        self.errorWindow = QtWidgets.QErrorMessage()
 
         self.entryDict = {}
         self.selectedItemsInTable: dict[int, dict] = {}
 
+    def showErrorMessage(self, message, type):
+        self.errorWindow.showMessage(f'{message}\nFor more information, please see the log file "{logFile}"', type)
+
     def toggleSelection(self):
-        if len(self.selectedItemsInTable) == self.tableWidget.rowCount():
-            for i in range(self.tableWidget.rowCount()):
-                self.tableWidget.item(i, 0).setCheckState(QtCore.Qt.CheckState.Unchecked)
-        else:
-            for i in range(self.tableWidget.rowCount()):
-                self.tableWidget.item(i, 0).setCheckState(QtCore.Qt.CheckState.Checked)
+        try:
+            if len(self.selectedItemsInTable) == self.tableWidget.rowCount():
+                for i in range(self.tableWidget.rowCount()):
+                    self.tableWidget.item(i, 0).setCheckState(QtCore.Qt.CheckState.Unchecked)
+            else:
+                for i in range(self.tableWidget.rowCount()):
+                    self.tableWidget.item(i, 0).setCheckState(QtCore.Qt.CheckState.Checked)
+        except:
+            self.showErrorMessage("An error occured while toggling selection.", "toggling")
 
     def reinitializeTable(self):
-        if self.lw.downloading:
-            return
+        try:
+            if self.lw.downloading:
+                return
 
-        self.clearTable()
-        self.resizeTable()
-        self.entryDict = {}
+            self.clearTable()
+            self.resizeTable()
+            self.entryDict = {}
+        except:
+            self.showErrorMessage("An error occured while reinitializing the table.", "reinit")
+
+    def startDownload(self, hd):
+        if self.entryDict == {}:
+            return
+        directory = str(QFileDialog.getExistingDirectory(self, "Select download directory"))
+        if directory != "":
+            dh = DownloadHelper(list(self.entryDict.values()), directory, hd, self.comboBox_2.currentText())
+            self.lw.setDownloadHelper(dh)
+            self.lw.show()
+            self.lw.downloading = True
+            dh.start()
 
     def downloadHD(self):
-        if self.entryDict == {}:
-            return
-        directory = str(QFileDialog.getExistingDirectory(self, "Select download directory"))
-        if directory != "":
-            dh = DownloadHelper(list(self.entryDict.values()), directory, True, self.comboBox_2.currentText())
-            self.lw.setDownloadHelper(dh)
-            self.lw.show()
-            self.lw.downloading = True
-            dh.start()
+        self.startDownload(True)
 
     def downloadSD(self):
-        if self.entryDict == {}:
-            return
-        directory = str(QFileDialog.getExistingDirectory(self, "Select download directory"))
-        if directory != "":
-            dh = DownloadHelper(list(self.entryDict.values()), directory, False, self.comboBox_2.currentText())
-            self.lw.setDownloadHelper(dh)
-            self.lw.show()
-            self.lw.downloading = True
-            dh.start()
+        self.startDownload(False)
 
     def downloadMP3(self):
-        if self.entryDict == {}:
-            return
-        directory = str(QFileDialog.getExistingDirectory(self, "Select download directory"))
-        if directory != "":
-            dh = DownloadHelper(list(self.entryDict.values()), directory, None, self.comboBox_2.currentText())
-            self.lw.setDownloadHelper(dh)
-            self.lw.show()
-            self.lw.downloading = True
-            dh.start()
+        self.startDownload(None)
 
     def showSelection(self):
-        if self.lw.downloading:
-            return
+        try:
+            if self.lw.downloading:
+                return
 
-        self.clearTable()
-        for songId in self.entryDict:
-            self.addEntryToTable(self.entryDict[songId])
-        self.resizeTable()
+            self.clearTable()
+            for songId in self.entryDict:
+                self.addEntryToTable(self.entryDict[songId])
+            self.resizeTable()
+        except:
+            self.showErrorMessage("An error occured while showing the selection.", "selection")
 
     def entryClicked(self, item):
         if not isinstance(item, QEntryItem) or self.lw.downloading:
@@ -319,60 +320,62 @@ class MainWindow(QMainWindow):
             self.tableWidget.setItem(row, i, item)
 
     def searchButton(self):
-        if self.lw.downloading:
-            return
+        try:
+            if self.lw.downloading:
+                return
 
-        self.selectedItemsInTable = {}
+            self.selectedItemsInTable = {}
 
-        reqObj = {
-            "and_logic": not self.comboBox.currentIndex(),
-            "ignore_duplicate": self.checkBox_8.isChecked(),
-            "opening_filter": self.checkBox_5.isChecked(),
-            "ending_filter": self.checkBox_6.isChecked(),
-            "insert_filter": self.checkBox_7.isChecked(),
-            "normal_broadcast": True,
-            "dub": True,
-            "rebroadcast": True,
-            "standard": True,
-            "instrumental": True,
-            "chanting": True,
-            "character": True
-        }
-        if self.lineEdit.text() != "":
-            reqObj["anime_search_filter"] = {
-                "search": self.lineEdit.text(),
-                "partial_match": self.checkBox.isChecked()
+            reqObj = {
+                "and_logic": not self.comboBox.currentIndex(),
+                "ignore_duplicate": self.checkBox_8.isChecked(),
+                "opening_filter": self.checkBox_5.isChecked(),
+                "ending_filter": self.checkBox_6.isChecked(),
+                "insert_filter": self.checkBox_7.isChecked(),
+                "normal_broadcast": True,
+                "dub": True,
+                "rebroadcast": True,
+                "standard": True,
+                "instrumental": True,
+                "chanting": True,
+                "character": True
             }
-        if self.lineEdit_2.text() != "":
-            reqObj["song_name_search_filter"] = {
-                "search": self.lineEdit_2.text(),
-                "partial_match": self.checkBox_2.isChecked()
-            }
-        if self.lineEdit_3.text() != "":
-            reqObj["artist_search_filter"] = {
-                "search": self.lineEdit_3.text(),
-                "partial_match": self.checkBox_3.isChecked(),
-                "group_granularity": 0,
-                "max_other_artist": 99
-            }
-        if self.lineEdit_4.text() != "":
-            reqObj["composer_search_filter"] = {
-                "search": self.lineEdit_4.text(),
-                "partial_match": self.checkBox_4.isChecked(),
-                "arrangement": True
-            }
+            if self.lineEdit.text() != "":
+                reqObj["anime_search_filter"] = {
+                    "search": self.lineEdit.text(),
+                    "partial_match": self.checkBox.isChecked()
+                }
+            if self.lineEdit_2.text() != "":
+                reqObj["song_name_search_filter"] = {
+                    "search": self.lineEdit_2.text(),
+                    "partial_match": self.checkBox_2.isChecked()
+                }
+            if self.lineEdit_3.text() != "":
+                reqObj["artist_search_filter"] = {
+                    "search": self.lineEdit_3.text(),
+                    "partial_match": self.checkBox_3.isChecked(),
+                    "group_granularity": 0,
+                    "max_other_artist": 99
+                }
+            if self.lineEdit_4.text() != "":
+                reqObj["composer_search_filter"] = {
+                    "search": self.lineEdit_4.text(),
+                    "partial_match": self.checkBox_4.isChecked(),
+                    "arrangement": True
+                }
 
-        x = session.post(requestURL, json=reqObj, headers=headers)
-        data = json.loads(x.text)
-        print(data)
-        print(len(data))
+            x = session.post(requestURL, json=reqObj, headers=headers)
+            data = json.loads(x.text)
 
-        self.clearTable()
+            self.clearTable()
 
-        for entry in data:
-            self.addEntryToTable(entry)
+            for entry in data:
+                self.addEntryToTable(entry)
 
-        self.resizeTable()
+            self.resizeTable()
+        except:
+            self.showErrorMessage("An error occured while searching.", "searching")
+
 
 app = QApplication([])
 

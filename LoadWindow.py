@@ -4,7 +4,7 @@ from PyQt6.QtWidgets import QDialog, QLabel, QProgressBar
 from downloadHelper import DownloadHelper
 
 class LoadWindow(QDialog):
-    def __init__(self):
+    def __init__(self, app):
         QDialog.__init__(self)
         self.setFixedSize(500, 125)
         self.setWindowTitle("Downloading selection...")
@@ -31,10 +31,17 @@ class LoadWindow(QDialog):
         self.downloadHelper = None
         self.cancelling = False
 
+        self.app = app
+
     def hide(self):
         super().hide()
         self.pbar.setValue(0)
         self.downloading = False
+
+    def prehide(self, done):
+        self.hide()
+        if not done:
+            self.app.showErrorMessage("An error occured while downloading.", "download")
 
     def progressUpdate(self, progress):
         self.pbar.setValue(progress)
@@ -43,7 +50,7 @@ class LoadWindow(QDialog):
         self.downloadHelper = downloadHelper
         self.downloadHelper.progressChanged.connect(self.progressUpdate)
         self.downloadHelper.messageChanged.connect(self.setMessage)
-        self.downloadHelper.doneSignal.connect(self.hide)
+        self.downloadHelper.doneSignal.connect(self.prehide)
         self.cancelling = False
 
     def setMessage(self, message):

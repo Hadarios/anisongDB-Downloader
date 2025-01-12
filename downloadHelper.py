@@ -1,6 +1,7 @@
 import os
 import subprocess
 import sys
+import logging
 
 import eyed3
 import requests
@@ -21,12 +22,17 @@ class DownloadHelper(QThread):
         self.running = False
 
     def run(self):
-        self.running = True
-        if self.hd is None:
-            self.downloadMP3(self.source, self.directory)
-        else:
-            self.downloadVideo(self.source, self.directory, self.hd)
-        self.doneSignal.emit(True)
+        try:
+            self.running = True
+            if self.hd is None:
+                self.downloadMP3(self.source, self.directory)
+            else:
+                self.downloadVideo(self.source, self.directory, self.hd)
+            self.doneSignal.emit(True)
+        except:
+            logging.exception("An error has occured while downloading.")
+            self.doneSignal.emit(False)
+
 
     def fetchSong(self, anime, L, url, directory, ins):
         print("Downloading " + L['songName'] + " from catbox.moe")
