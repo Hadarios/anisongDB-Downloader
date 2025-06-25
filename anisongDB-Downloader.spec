@@ -5,7 +5,7 @@ a = Analysis(
     ['anisongDB-Downloader.py'],
     pathex=[],
     binaries=[],
-    datas=[('files\\logo.png', 'files'), ('files\\ffmpeg.exe', 'files')],
+    datas=[('files\\logo.png', 'files'), ('files\\ffmpeg.exe', '.')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},

@@ -6,7 +6,8 @@ import logging
 import eyed3
 import requests
 from PyQt6.QtCore import QThread, pyqtSignal
-from bs4 import BeautifulSoup
+from os import path
+
 
 
 class DownloadHelper(QThread):
@@ -51,7 +52,6 @@ class DownloadHelper(QThread):
                 namefile += name[i]
         namefile = os.path.join(directory, namefile +
                                 (".webm" if video else ".mp3"))
-
         return response, namefile, name, songType
 
     def downloadMP3(self, source, directory):
@@ -83,15 +83,15 @@ class DownloadHelper(QThread):
 
                 response, namefile, name, songType = self.fetchSong(
                     anime, L, url, directory, False)
-
                 if not mp3:
                     open("temp.webm", "wb").write(response.content)
-                    if sys.platform == 'win32':
-                        subprocess.run(
-                            'files/ffmpeg -i temp.webm "{0}"'.format(namefile), shell=True)
-                    else:
-                        subprocess.run(
-                            'ffmpeg -i temp.webm "{0}"'.format(namefile), shell=True)
+
+                    sys.path.append(path.abspath(path.dirname(__file__)))
+
+                    cmdline = f'ffmpeg -i temp.webm "{namefile}"'
+                    r = subprocess.run(
+                            cmdline, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                    logging.info(f'{cmdline}": %r', r.stdout.decode(errors="replace"))
                     os.remove("temp.webm")
                     print("Complete")
                     self.messageChanged.emit("Complete")
@@ -118,15 +118,23 @@ class DownloadHelper(QThread):
                 self.messageChanged.emit("Added")
                 progress += 1
                 print("{0} complete, to next song! {1}/{2} ({3}%)\n".format(name,
-                      progress, len(source), round(progress/len(source)*100), 2))
-                self.messageChanged.emit("{0} complete, to next song! {1}/{2} ({3}%)\n".format(
-                    name, progress, len(source), round(progress/len(source)*100), 2))
+                      progress, len(source),
+                                                                            round(progress / len(source) * 100), 2))
+                self.messageChanged.emit(
+                    "{0} complete, to next song! {1}/{2} ({3}%)\n".format(
+                    name, progress, len(source),
+                                                                          round(progress / len(source) * 100), 2))
             else:
                 progress += 1
                 print("No upload found for {0} - {1}, skipping. {2}/{3} ({4}%)\n".format(
-                    L['songArtist'], L['songName'], progress, len(source), round(progress/len(source)*100), 2))
-                self.messageChanged.emit("No upload found for {0} - {1}, skipping. {2}/{3} ({4}%)\n".format(
-                    L['songArtist'], L['songName'], progress, len(source), round(progress/len(source)*100), 2))
+                    L['songArtist'], L['songName'],
+                                                                                         progress, len(source), round(
+                        progress / len(source) * 100), 2))
+                self.messageChanged.emit(
+                    "No upload found for {0} - {1}, skipping. {2}/{3} ({4}%)\n".format(
+                    L['songArtist'], L['songName'],
+                                                                                       progress, len(source), round(
+                            progress / len(source) * 100), 2))
             self.progressChanged.emit(int(progress / total * 100))
 
     def downloadVideo(self, source, directory, hd):
@@ -151,7 +159,6 @@ class DownloadHelper(QThread):
 
             response, namefile, _, _ = self.fetchSong(
                 L[self.animeField], L, url, directory, True)
-
             print("Writing to file...")
             self.messageChanged.emit("Writing to file...")
             open(namefile, "wb").write(response.content)
