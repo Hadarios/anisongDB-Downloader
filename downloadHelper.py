@@ -9,7 +9,6 @@ from PyQt6.QtCore import QThread, pyqtSignal
 from os import path
 
 
-
 class DownloadHelper(QThread):
     progressChanged = pyqtSignal(int)
     messageChanged = pyqtSignal(str)
@@ -44,8 +43,8 @@ class DownloadHelper(QThread):
         songType = L['songType']
 
         name = anime + " - " + songType + \
-            " (" + L['songName'] + " by " + \
-            L['songArtist'] + ") " + str(L["annSongId"])
+               " (" + L['songName'] + " by " + \
+               L['songArtist'] + ") " + str(L["annSongId"])
         namefile = ""
         for i in range(len(name)):
             if name[i] not in ["/", "\\", "*", "|", ":", "?", "\"", "<", ">"]:
@@ -90,7 +89,7 @@ class DownloadHelper(QThread):
 
                     cmdline = f'ffmpeg -i temp.webm "{namefile}"'
                     r = subprocess.run(
-                            cmdline, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                        cmdline, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
                     logging.info(f'{cmdline}": %r', r.stdout.decode(errors="replace"))
                     os.remove("temp.webm")
                     print("Complete")
@@ -110,31 +109,22 @@ class DownloadHelper(QThread):
 
                 audiofile.tag.artist = L['songArtist']
                 audiofile.tag.title = L['songName'] + \
-                    " (" + anime + " - " + songType + ")"
+                                      " (" + anime + " - " + songType + ")"
                 audiofile.tag.track_num = L["annSongId"]
                 audiofile.tag.save(version=(2, 4, 0), encoding='utf-8')
 
                 print("Added")
                 self.messageChanged.emit("Added")
                 progress += 1
-                print("{0} complete, to next song! {1}/{2} ({3}%)\n".format(name,
-                      progress, len(source),
-                                                                            round(progress / len(source) * 100), 2))
-                self.messageChanged.emit(
-                    "{0} complete, to next song! {1}/{2} ({3}%)\n".format(
-                    name, progress, len(source),
-                                                                          round(progress / len(source) * 100), 2))
+
+                progress_msg = f"{name} complete, to next song! {progress}/{len(source)} ({round(progress / len(source) * 100, 2)}%)\n"
+                print(progress_msg)
+                self.messageChanged.emit(progress_msg)
             else:
                 progress += 1
-                print("No upload found for {0} - {1}, skipping. {2}/{3} ({4}%)\n".format(
-                    L['songArtist'], L['songName'],
-                                                                                         progress, len(source), round(
-                        progress / len(source) * 100), 2))
-                self.messageChanged.emit(
-                    "No upload found for {0} - {1}, skipping. {2}/{3} ({4}%)\n".format(
-                    L['songArtist'], L['songName'],
-                                                                                       progress, len(source), round(
-                            progress / len(source) * 100), 2))
+                progress_msg = f"No upload found for {L['songArtist']} - {L['songName']}, skipping. {progress}/{len(source)} ({round(progress / len(source) * 100, 2)}%)\n"
+                print(progress_msg)
+                self.messageChanged.emit(progress_msg)
             self.progressChanged.emit(int(progress / total * 100))
 
     def downloadVideo(self, source, directory, hd):
