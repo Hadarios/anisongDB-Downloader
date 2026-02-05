@@ -162,8 +162,11 @@ class MainWindow(QMainWindow):
         self.pushButton.setObjectName("pushButton")
 
         self.pushButton_2 = QtWidgets.QPushButton(parent=self)
-        self.pushButton_2.setGeometry(QtCore.QRect(964, 40, 191, 25))
+        self.pushButton_2.setGeometry(QtCore.QRect(1061, 40, 94, 25))
         self.pushButton_2.setText("Download (MP3)")
+        font = self.pushButton_2.font()
+        font.setPointSize(8)
+        self.pushButton_2.setFont(font)
         self.pushButton_2.clicked.connect(self.downloadMP3)
         self.pushButton_2.setToolTip(
             "Download the selected songs as MP3 files")
@@ -207,6 +210,17 @@ class MainWindow(QMainWindow):
         self.pushButton_7.setToolTip(
             "Select/Deselect all songs currently in the table")
         self.pushButton_7.setObjectName("pushButton_7")
+
+        self.pushButton_8 = QtWidgets.QPushButton(parent=self)
+        self.pushButton_8.setGeometry(QtCore.QRect(964, 40, 94, 25))
+        self.pushButton_8.setText("Download (M3U)")
+        self.pushButton_8.clicked.connect(self.downloadM3U)
+        self.pushButton_8.setToolTip(
+            "Download the selected songs as an M3U playlist")
+        self.pushButton_8.setObjectName("pushButton_8")
+        font = self.pushButton_8.font()
+        font.setPointSize(8)
+        self.pushButton_8.setFont(font)
 
         self.comboBox = QtWidgets.QComboBox(parent=self)
         self.comboBox.setGeometry(QtCore.QRect(964, 10, 101, 25))
@@ -300,6 +314,22 @@ class MainWindow(QMainWindow):
 
     def downloadMP3(self):
         self.startDownload(None)
+
+    def downloadM3U(self):
+        try:
+            downloadPath, _ = QFileDialog.getSaveFileName(
+                        self, "Select download destination")
+            if not len(downloadPath):
+                return
+
+            with open(downloadPath, 'w') as f:
+                for entry in self.entryDict:
+                    f.write(f"{entry}.mp3\n")
+
+        except:
+            logging.exception("An error has occured while downloading M3U.")
+            self.showErrorMessage(
+                "An error has occured while downloading M3U.", "m3u")
 
     def showSelection(self):
         try:
