@@ -324,7 +324,7 @@ class MainWindow(QMainWindow):
 
             with open(downloadPath, 'w') as f:
                 for entry in self.entryDict:
-                    f.write(f"{entry}.mp3\n")
+                    f.write(f"/music/{entry}.mp3\n")
 
         except:
             logging.exception("An error has occured while downloading M3U.")
